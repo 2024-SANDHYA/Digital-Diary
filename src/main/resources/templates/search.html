@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Search Diary</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+</head>
+<body class="bg-light text-dark">
+
+<div class="container py-5">
+    <h2 class="mb-4 text-primary">🔍 Search Diary Entries</h2>
+
+    <form action="/search" method="get" class="input-group mb-4">
+        <input type="text" name="keyword" class="form-control" placeholder="Search by keyword..." required>
+        <button type="submit" class="btn btn-primary">Search</button>
+    </form>
+
+    <ul class="list-group" th:if="${results != null}">
+        <li class="list-group-item" th:each="date : ${results}">
+            <a th:href="@{'/load'(date=${date})}" class="text-decoration-none">📅 Entry on [[${date}]]</a>
+        </li>
+    </ul>
+
+    <a href="/" class="btn btn-outline-secondary mt-4">← Back to Home</a>
+</div>
+<canvas id="leafCanvas" style="position: fixed; top: 0; left: 0; z-index: -1;"></canvas>
+
+<script>
+const canvas = document.getElementById("leafCanvas");
+const ctx = canvas.getContext("2d");
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+const leaves = [];
+
+for (let i = 0; i < 30; i++) {
+    leaves.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        size: 20 + Math.random() * 15,
+        speedY: 0.5 + Math.random(),
+        speedX: Math.random() * 0.5 - 0.25,
+        rotation: Math.random() * 360
+    });
+}
+
+function drawLeaf(leaf) {
+    ctx.save();
+    ctx.translate(leaf.x, leaf.y);
+    ctx.rotate((leaf.rotation * Math.PI) / 180);
+    ctx.fillStyle = "#BADA55";
+    ctx.beginPath();
+    ctx.moveTo(0, 0);
+    ctx.quadraticCurveTo(10, -10, 0, -20);
+    ctx.quadraticCurveTo(-10, -10, 0, 0);
+    ctx.fill();
+    ctx.restore();
+}
+
+function animate() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    leaves.forEach((leaf) => {
+        leaf.y += leaf.speedY;
+        leaf.x += leaf.speedX;
+        leaf.rotation += 1;
+        if (leaf.y > canvas.height) leaf.y = -20;
+        drawLeaf(leaf);
+    });
+    requestAnimationFrame(animate);
+}
+
+animate();
+
+window.addEventListener("resize", () => {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+});
+</script>
+
+</body>
+</html>
