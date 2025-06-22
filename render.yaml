@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: digital-diary
+    runtime: docker
+    plan: free
+    repo: https://github.com/2024-SANDHYA/Digital-Diary
+    region: oregon
+    buildCommand: ./mvnw clean package -DskipTests
+    startCommand: java -jar target/*.jar
+    dockerfilePath: Dockerfile
